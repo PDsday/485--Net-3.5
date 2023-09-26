@@ -959,7 +959,7 @@ namespace _485刷机_Net_3._5
                             timer1.Stop();
                             enable_function();
                             MessageBoxMidle.Show(this, "跳转后重连网络无响应！\r\n请重试！", "提示");
-                           
+                            //GitHub提交全新
                             return;
                         }
                     }
