@@ -69,7 +69,7 @@ namespace _485刷机_Net_3._5
         bool Connect = true;                                 //应答式接收的运行标志位
         bool First_Run = true;                               //判断是否第一次点击下载
         bool loadtimecount = false;                          //计时标志位
-        bool powerdisplay = false;                           //隐藏某些
+        bool powerdisplay = true;                           //隐藏某些
         bool cdsingle = false;                               //充电板单板刷机模式是否启动
         static int i = 0;
         int loadtime = 0;
@@ -120,6 +120,9 @@ namespace _485刷机_Net_3._5
             toolTip1.ReshowDelay = 500;
             toolTip1.ShowAlways = true;
             toolTip1.SetToolTip(this.cdviewbtn, "支持文件*.bin拖放");
+            this.databox.ContextMenuStrip = this.contextMenuStrip2;
+
+            
             #region 判断是否存在INI文件，如果存在就显示
             //此方法也可通过：str = System.AppDomain.CurrentDomain.BaseDirectory + @"ConnectString.ini";
             strOne = System.IO.Path.GetFileNameWithoutExtension(str);
@@ -155,8 +158,10 @@ namespace _485刷机_Net_3._5
             {
                 this.Location = new Point(Form7.windowX, Form7.windowY);
             }
+           // Console.WriteLine("david--充电板循环下载");
             if (Commentclass.WinDey)
             {
+
                 //menuStrip1.Items.Remove(主控板刷机);
                 menuStrip1.Items[2].Visible=false;
                 this.Icon = IconSelect.GetFileIcon(Application.StartupPath + "\\icon\\wendey.ico");
@@ -227,9 +232,13 @@ namespace _485刷机_Net_3._5
                     databox.Select(18, 10);
                     databox.SelectionColor = Color.Red;
                 }
+
+               
             }
             else
             {
+
+
                 this.Icon = IconSelect.GetFileIcon(Application.StartupPath + "\\icon\\wendey.ico");
                 this.Text = ReadINIFiles.ReadIniData("UserConfig", "ApplicationName", "None", IniFilesPath);
                 toolStripStatusLabel1.Text = "充ARM升级";
@@ -1583,6 +1592,46 @@ namespace _485刷机_Net_3._5
         private void databox_TextChanged(object sender, EventArgs e)
         {
             databox.Focus();
+        }
+
+        private void ContextStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UInt16 tag = Convert.ToUInt16(((ToolStripMenuItem)sender).Tag.ToString());
+            switch (tag)
+            {
+                case 0x00://清除
+                    this.databox.Text = string.Empty;
+                    break;
+                case 0x01://导出文本
+                    if (Commentclass.CommentTranspDataEnd)
+                    {
+                        string BackMessage = ControlFile.SaveTxtFilesFromTextBox(databox);
+                        //if(!Commentclass.WinDey)
+                        //{
+                        //    BackMessage = ControlFile.SaveTxtFilesFromTextBox(textBox1);
+                        //}    
+
+                        if (BackMessage == "ok")
+                        {
+                            MessageBoxMidle.Show(this, "导出成功。", "提示");
+                        }
+                        else if (BackMessage == "qt")
+                        {; }
+                        else
+                        {
+                            MessageBoxMidle.Show(this, BackMessage, "提示");
+                        }
+                    }
+                    else
+                    {
+                        MessageBoxMidle.Show(this, "数据更新中不能导出文件。", "错误");
+                    }
+                    break;
+                case 0x02://关闭窗口
+
+                    break;
+
+            }
         }
 
     }

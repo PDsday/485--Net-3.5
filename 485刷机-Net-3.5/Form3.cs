@@ -79,7 +79,7 @@ namespace _485刷机_Net_3._5
         bool Erasflag = false;                               //擦除失败标志位
         bool Ulockflg = false;                               //解锁失败标志位
         bool step_send = false;
-        bool powerdisplay = false;                           //隐藏显示某些东西
+        bool powerdisplay = true;                           //隐藏显示某些东西
         bool firstopen = true;                               //上位机是否第一次打开
         bool canset = false;
         #endregion
@@ -144,7 +144,9 @@ namespace _485刷机_Net_3._5
             toolTip1.ReshowDelay = 500;
             toolTip1.ShowAlways = true;
             toolTip1.SetToolTip(this.filebutton, "支持文件*.bin拖放");
-            this.databox.ContextMenuStrip = this.David_contextMenuStrip2;   
+            this.databox.ContextMenuStrip = this.David_contextMenuStrip2;
+
+            
         }
 
         #region 擦除进度显示
@@ -1311,6 +1313,12 @@ namespace _485刷机_Net_3._5
                 //menuStrip1.Items.Remove(以太网测试ToolStripMenuItem);
                 //DSP刷机.Enabled = false;
                 以太网测试ToolStripMenuItem.Dispose();
+
+                //循环测试
+                this.cir_lode_Label2.Text = string.Empty;
+                this.cir_lode_Label2.BackColor = Color.White;
+                this.cir_lode_Label2.Enabled = false;
+                
             }
             else
             {
@@ -1330,6 +1338,7 @@ namespace _485刷机_Net_3._5
                 //textBox1.Location = new Point(X, y);
                 //textBox1.Show();                
                 //label1.Text = "网口：";
+
             }
             textBox1.Hide();
             toolStripStatusLabel3.Text = Commentclass.Version;

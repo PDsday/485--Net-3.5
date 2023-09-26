@@ -65,9 +65,13 @@ namespace _485刷机_Net_3._5
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.databox = new System.Windows.Forms.RichTextBox();
             this.cdloadprogressBar = new System.Windows.Forms.ProgressBar();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.清除数据ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.导入文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -368,6 +372,30 @@ namespace _485刷机_Net_3._5
             this.cdloadprogressBar.Size = new System.Drawing.Size(344, 18);
             this.cdloadprogressBar.TabIndex = 42;
             // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.清除数据ToolStripMenuItem,
+            this.导入文件ToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 70);
+            // 
+            // 清除数据ToolStripMenuItem
+            // 
+            this.清除数据ToolStripMenuItem.Name = "清除数据ToolStripMenuItem";
+            this.清除数据ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.清除数据ToolStripMenuItem.Tag = "0";
+            this.清除数据ToolStripMenuItem.Text = "清除数据";
+            this.清除数据ToolStripMenuItem.Click += new System.EventHandler(this.ContextStripMenuItem_Click);
+            // 
+            // 导入文件ToolStripMenuItem
+            // 
+            this.导入文件ToolStripMenuItem.Name = "导入文件ToolStripMenuItem";
+            this.导入文件ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.导入文件ToolStripMenuItem.Tag = "1";
+            this.导入文件ToolStripMenuItem.Text = "导入文件";
+            this.导入文件ToolStripMenuItem.Click += new System.EventHandler(this.ContextStripMenuItem_Click);
+            // 
             // Form2
             // 
             this.AllowDrop = true;
@@ -406,6 +434,7 @@ namespace _485刷机_Net_3._5
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -447,5 +476,8 @@ namespace _485刷机_Net_3._5
         private System.Windows.Forms.RichTextBox databox;
         private System.Windows.Forms.ProgressBar cdloadprogressBar;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem 清除数据ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 导入文件ToolStripMenuItem;
     }
 }

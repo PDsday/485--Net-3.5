@@ -123,6 +123,9 @@ namespace _485刷机_Net_3._5
             toolTip1.ReshowDelay = 500;
             toolTip1.ShowAlways = true;
             toolTip1.SetToolTip(this.filebutton, "支持文件*.bin|*.hex拖放");
+            this.databox.ContextMenuStrip = this.contextMenuStrip2;
+
+
 
             #region 判断是否存在INI文件，如果存在就显示        
             //此方法也可通过：str = System.AppDomain.CurrentDomain.BaseDirectory + @"ConnectString.ini";
@@ -1464,6 +1467,48 @@ namespace _485刷机_Net_3._5
         }
         #endregion
 
+        #region 清除和文件保存功能
+        private void ContextStripMenuItem_Click(object sender, EventArgs e)
+        {
+            UInt16 tag = Convert.ToUInt16(((ToolStripMenuItem)sender).Tag.ToString());
+            switch (tag)
+            {
+                case 0x00://清除
+                    this.databox.Text = string.Empty;
+                    break;
+                case 0x01://导出文本
+                    if (Commentclass.CommentTranspDataEnd)
+                    {
+                        string BackMessage = ControlFile.SaveTxtFilesFromTextBox(databox);
+                        //if(!Commentclass.WinDey)
+                        //{
+                        //    BackMessage = ControlFile.SaveTxtFilesFromTextBox(textBox1);
+                        //}    
+
+                        if (BackMessage == "ok")
+                        {
+                            MessageBoxMidle.Show(this, "导出成功。", "提示");
+                        }
+                        else if (BackMessage == "qt")
+                        {; }
+                        else
+                        {
+                            MessageBoxMidle.Show(this, BackMessage, "提示");
+                        }
+                    }
+                    else
+                    {
+                        MessageBoxMidle.Show(this, "数据更新中不能导出文件。", "错误");
+                    }
+                    break;
+                case 0x02://关闭窗口
+
+                    break;
+
+            }
+        }
+        #endregion
+
         private void disable_function()
         {
             menuStrip1.Enabled = false;
@@ -1600,4 +1645,6 @@ namespace _485刷机_Net_3._5
             Console.WriteLine("Daivd--" + str + ":" + " function--" + sf.GetMethod().Name + " Line--" + sf.GetFileLineNumber());
         }
     }
+
+
 }

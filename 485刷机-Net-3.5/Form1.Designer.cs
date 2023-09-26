@@ -69,9 +69,13 @@ namespace _485刷机_Net_3._5
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.清除输出ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.导入文件ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
+            this.contextMenuStrip2.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -294,7 +298,7 @@ namespace _485刷机_Net_3._5
             this.cirLode_statusLabel.BackColor = System.Drawing.Color.Yellow;
             this.cirLode_statusLabel.Font = new System.Drawing.Font("楷体", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.cirLode_statusLabel.Name = "cirLode_statusLabel";
-            this.cirLode_statusLabel.Size = new System.Drawing.Size(187, 17);
+            this.cirLode_statusLabel.Size = new System.Drawing.Size(218, 17);
             this.cirLode_statusLabel.Spring = true;
             this.cirLode_statusLabel.Text = "点击循环测试";
             this.cirLode_statusLabel.Click += new System.EventHandler(this.cirLode_statusLabel_Click);
@@ -408,6 +412,30 @@ namespace _485刷机_Net_3._5
             this.textBox2.TabIndex = 47;
             this.textBox2.Text = "0";
             // 
+            // contextMenuStrip2
+            // 
+            this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.清除输出ToolStripMenuItem,
+            this.导入文件ToolStripMenuItem});
+            this.contextMenuStrip2.Name = "contextMenuStrip2";
+            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 70);
+            // 
+            // 清除输出ToolStripMenuItem
+            // 
+            this.清除输出ToolStripMenuItem.Name = "清除输出ToolStripMenuItem";
+            this.清除输出ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.清除输出ToolStripMenuItem.Tag = "0";
+            this.清除输出ToolStripMenuItem.Text = "清除输出";
+            this.清除输出ToolStripMenuItem.Click += new System.EventHandler(this.ContextStripMenuItem_Click);
+            // 
+            // 导入文件ToolStripMenuItem
+            // 
+            this.导入文件ToolStripMenuItem.Name = "导入文件ToolStripMenuItem";
+            this.导入文件ToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.导入文件ToolStripMenuItem.Tag = "1";
+            this.导入文件ToolStripMenuItem.Text = "导入文件";
+            this.导入文件ToolStripMenuItem.Click += new System.EventHandler(this.ContextStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -448,6 +476,7 @@ namespace _485刷机_Net_3._5
             this.contextMenuStrip1.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
+            this.contextMenuStrip2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -493,6 +522,9 @@ namespace _485刷机_Net_3._5
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
+        private System.Windows.Forms.ToolStripMenuItem 清除输出ToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem 导入文件ToolStripMenuItem;
     }
 }
 
