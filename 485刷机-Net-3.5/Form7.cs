@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -191,6 +192,7 @@ namespace _485刷机_Net_3._5
         #region 窗体加载
         private void Form7_Load(object sender, EventArgs e)
         {
+            /*
             if (Commentclass.fmjump == 0x01)    //从窗口1切换过来
             {
                 this.Location = new Point(Form1.windowX, Form1.windowY);
@@ -265,7 +267,7 @@ namespace _485刷机_Net_3._5
                 Commentclass.OpenTheWindws = 0x00;
                 Debug.WriteLine("位置校正....................");                
             }
-           
+           */
             //this.Text = ReadINIFiles.ReadIniData("ApplicationMessage", "Name", "None", IniFilesPath);
             //this.Size = new Size(526,223);
             //加上注册表读取路径,首先判断
@@ -274,7 +276,7 @@ namespace _485刷机_Net_3._5
             RegistryKeyLi.PreventCreadErr(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentDspResgistryKeyName);     //DSP
             //Commentclass.CommentIP = ipaddres.Text;
 
-            versionlable.Text = "Version:"+ Commentclass.Version;
+           // versionlable.Text = "Version:"+ Commentclass.Version;
             TranspCodeTimerout.AutoReset = true;// 是否重复调用 Elapsed事件方法,如果为false 则Elapsed 事件方法就只会调用一次。这里就是TimeAction方法就只会调用一次
             TranspCodeTimerout.Elapsed += new System.Timers.ElapsedEventHandler(TranspCodeTimerout_Tick);
 
@@ -322,10 +324,10 @@ namespace _485刷机_Net_3._5
             Commentclass.CommentChargeBordCheckNum = uint.Parse( ReadINIFiles.ReadIniData("Message", "ChargeBordCheckCount", "None", IniFilesPath));
 
             //////刷机目标文件的大小限制
-            //主控板目标文件的最小值
-            Commentclass.MainBoardFileSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBordFileMin", "None", IniFilesPath)) * 1024;
-            //主控板目标文件的最大值
-            Commentclass.MainBoardFileSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBordFileMax", "None", IniFilesPath)) * 1024;
+            //读取刷机文件(主控板)大小限制参数
+            //string data = ReadINIFiles.ReadIniData("FileSizeSet", "MainBordFileHexMin", "None", IniFilesPath);
+                                                                                                       
+            
             //充电板目标文件的最小值
             Commentclass.ChargeBoardFileSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "ChargeBordFileMin", "None", IniFilesPath)) * 1024;
             //充电板目标文件的最大值
@@ -334,6 +336,14 @@ namespace _485刷机_Net_3._5
             Commentclass.DSPBoardFileSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "DSPBordFileMin", "None", IniFilesPath)) * 1024;
             //DSP目标文件的最大值
             Commentclass.DSPBoardFileSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "DSPBordFileMax", "None", IniFilesPath)) * 1024;
+
+            Commentclass.MainBoardFileHexSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainHexMin", "None", IniFilesPath)) * 1024;
+            //主控板目标文件的最大值
+            Commentclass.MainBoardFileHexSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainHexMax", "None", IniFilesPath)) * 1024;
+            //读取刷机文件(主控板)大小限制参数
+            Commentclass.MainBoardFileBinSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBinMin", "None", IniFilesPath)) * 1024;
+            //主控板目标文件的最大值
+            Commentclass.MainBoardFileBinSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBinMax", "None", IniFilesPath)) * 1024;
 
             //ContractUI();
             string maximalsize = ReadINIFiles.ReadIniData("MainBordCodeSizeLimti", "MaximalSize", "None", IniFilesPath);
@@ -353,14 +363,138 @@ namespace _485刷机_Net_3._5
             //ipaddres.Text = ReadINIFiles.ReadIniData("DspLinkData", "IpAddress", "None", IniFilesPath);
             Commentclass.CommentNetPort = int.Parse(ReadINIFiles.ReadIniData("DspLinkData", "NetPortNum", "None", IniFilesPath));
             Console.WriteLine($" Commentclass.CommentNetPort  = { Commentclass.CommentNetPort }.");
+
+            Admin_UI();
         }
+
+        /// <summary>
+        /// 注册表客户模式下隐藏住485刷机
+        /// </summary>
+        bool Admin_root;
+        void Admin_UI()
+        {
+            string msg;
+            this.toolStripStatusLabel4.Visible = false;
+
+
+            //this.pointlable.Visible = false;
+
+            RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentAppTargetResgistryKeyName, out msg);
+            Console.WriteLine("模式：" + msg);
+            if (msg == "User_Client")
+            {
+                this.databox.Text = "注意：\r\n1、ARM以太网升级前，需打到手动模式！！！\r\n2、ARM以太网升级使用驱动器X6A以太网接口；\r\n3、电脑端ip设置为192.168.1.XXX（大于20，小于254都可以）；\r\n4、上位机ip设置为192.168.1.拨码+10；";
+
+                Admin_root = false;
+                this.databox.Select(19, 4);
+                this.databox.SelectionFont = new Font("宋体", 13.5f, FontStyle.Underline | FontStyle.Bold);
+                this.databox.SelectionColor = Color.Red;
+                this.databox.Select(0, 0);
+
+                //this.menuStrip1.Items[1].Visible = false;
+                this.menuStrip1.Items[3].Visible = false;
+                this.menuStrip1.Items[5].Visible = false;
+
+
+                this.pointlable.Text = " ";
+                this.pointlable.Enabled = false;
+
+
+
+                this.Width = 550;
+                this.Height = 380;
+            }
+            else
+            { 
+                Admin_root= true;
+            }
+
+        }
+
         #endregion
 
         #region 窗体切换
+
+
         private void Form7_Activated(object sender, EventArgs e)
         {
             ipaddres.Text = Commentclass.CommentIP;
         }
+
+        #region 取代旧版的窗口跳转逻辑
+        private void Menustrip_Change(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+            //fmjump重新规定 ：00          01           02              03             04           05 
+            //            DSP升级    充ARM485     充电ARM(Eth)       主ARM485       主ARM(Eth)    DspBootload
+            //             Form3        Form2        Form8（新）       From1           From7        外部exe
+
+            Console.WriteLine(e.ClickedItem);
+
+            switch (e.ClickedItem.Text)
+            {
+                case "DSP以太网升级":
+                    if (Commentclass.fmjump != 0x00)
+                    {
+                        Commentclass.fm3.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm3.Show();
+                        Commentclass.fmjump = 0x00;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器485升级":
+                    if (Commentclass.fmjump != 0x01)
+                    {
+                        Commentclass.fm2.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm2.Show();
+                        Commentclass.fmjump = 0x01;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器以太网升级":
+                    if (Commentclass.fmjump != 0x02)
+                    {
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Console.WriteLine(this.Location.X.ToString() + "   " + this.Location.Y.ToString());
+                        Commentclass.fm8.Show();
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fmjump = 0x02;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM 485升级":
+                    if (Commentclass.fmjump != 0x03)
+                    {
+                        Commentclass.fm1.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm1.Show();
+                        Commentclass.fmjump = 0x03;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM以太网升级":
+                    if (Commentclass.fmjump != 0x04)
+                    {
+                        Commentclass.fm7.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm7.Show();
+                        Commentclass.fmjump = 0x04;
+                        this.Hide();
+                    }
+                    break;
+                case "DspBootLoad":
+                    {
+                        //暂定
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+
+
+        }
+
+        #endregion
         #endregion
 
         #region UI布局设计函数
@@ -373,31 +507,42 @@ namespace _485刷机_Net_3._5
                 //databox.Text = "支持*.hex文件和合并*.bin文件刷机";
                 //statelable.Text = "注意：仅支持合并的.bin文件升级";
                 Commentclass.CommentUpgrade = 0X00;     //升级对象主控板ARM
-                this.Mainbordenu.Enabled = true;
-                this.Chargebordenu.Enabled = true;
-                this.Dspbordenu1.Enabled = true;
+             //   this.Mainbordenu.Enabled = true;
+             //   this.Chargebordenu.Enabled = true;
+             //   this.Dspbordenu1.Enabled = true;
                 this.ModelBox.Hide();
                 this.label3.Hide();
 
                 //把路径读出来
                 Commentclass.CommentRuningKyeName = Commentclass.CommentMainResgistryKeyName;
                 //读取路径，按读到的路径打开相应的文件路径
-                RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentRuningKyeName, out Commentclass.CommentReadSavePath);
-                Console.WriteLine($"读出来的路径 = {Commentclass.CommentReadSavePath}.");
-                pathtextBox.Text = Commentclass.CommentReadSavePath;
+                string msg;
+                RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentRuningKyeName, out msg);
+                Console.WriteLine($"读出来的路径 = {msg}.");
+                if (Commentclass.CommentReadSavePath == "" | Commentclass.CommentReadSavePath == string.Empty)
+                {
+                    msg = "D:\\";
+                }
+                pathtextBox.Text = msg;
 
                 //读取IP
                 RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, "CommentIP", out Commentclass.CommentIP);
                 Console.WriteLine($"读出来的路径 = {Commentclass.CommentIP}.");
                 ipaddres.Text = Commentclass.CommentIP;
-
-                
+                if (Commentclass.CommentIP == "")
+                {
+                    Commentclass.CommentIP = "192.168.1.15";
+                    
+                }
+                this.ipaddres.Text = Commentclass.CommentIP;
             }
             catch (Exception err)
             {
                 MessageBoxMidle.Show(this, err.Message, "提示！");
             }
         }
+
+        /*
         private void ChargeBoardUI()
         {
             try
@@ -461,7 +606,9 @@ namespace _485刷机_Net_3._5
                 MessageBoxMidle.Show(this, err.Message, "提示！");
             }
         }
+         */
         #endregion
+
 
         #region 按键处理函数
         private void btnclick(object sender, EventArgs e)
@@ -474,6 +621,7 @@ namespace _485刷机_Net_3._5
                 {
                     case 0://浏览                   
                         //首先判断刷机目标,然后决定文件夹的名称
+                        Commentclass.CommentUpgrade = 0x00; //特定主控ARM
                         switch (Commentclass.CommentUpgrade)
                         {
                             case 0x00://主控板
@@ -489,12 +637,20 @@ namespace _485刷机_Net_3._5
                         //读取路径，按读到的路径打开相应的文件路径
                         RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentRuningKyeName, out Commentclass.CommentReadSavePath);
                         Console.WriteLine($"读出来的路径 = {Commentclass.CommentReadSavePath}.");
-                      
-                        Commentclass.CommentBackack = ReadFiles.CommentOpenFiles(Commentclass.CommentReadSavePath, out Commentclass.CommentRealyPath);
+
+                        if (Admin_root)
+                        {
+                            Commentclass.CommentBackack = ReadFiles.CommentOpenFiles(Commentclass.CommentReadSavePath, out Commentclass.CommentRealyPath);
+                        }
+                        else
+                        {
+                            Commentclass.CommentBackack = ReadFiles.CommentOpenFiles(Commentclass.CommentReadSavePath, out Commentclass.CommentRealyPath,"|*.hex");
+                        }
+                        
 
                         if (Commentclass.CommentBackack != "ok" && Commentclass.CommentBackack != "ds")
                         {
-                            MessageBoxMidle.Show(this, Commentclass.CommentBackack, "提示！");
+                            //MessageBoxMidle.Show(this, Commentclass.CommentBackack, "提示！");
                         }
                         else if (Commentclass.CommentBackack == "ds")
                         {
@@ -512,20 +668,22 @@ namespace _485刷机_Net_3._5
                         {                          
                            MainPrarInit();                                                                                          //变量初始化函数
                            DisableButton();
-                           this.databox.Clear();
+                            if (Admin_root)
+                                this.databox.Clear();
                            if(Commentclass.CommentUpgrade != 0x03)
                             {
                                 textBox3.Text = (Convert.ToInt32(textBox3.Text) + 1).ToString();
                             }                          
                            Commentclass.CommentRealyPath = pathtextBox.Text;//获取路径
                            Commentclass.CommentIP = ipaddres.Text;
-                           RegistryKeyLi.WriteRegistryKey(Commentclass.CommentIP, Commentclass.CommentPublicResgistryKeyPath, "CommentIP");      
-                           Commentclass.CommentBackack = SocketLi.SocketPingNet(Commentclass.CommentIP);
+                           RegistryKeyLi.WriteRegistryKey(Commentclass.CommentIP, Commentclass.CommentPublicResgistryKeyPath, "CommentIP");
+                           RegistryKeyLi.WriteRegistryKey(this.pathtextBox.Text, Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentMainResgistryKeyName);
+                            Commentclass.CommentBackack = SocketLi.SocketPingNet(Commentclass.CommentIP);
                            if (Commentclass.CommentBackack == "no")
                            {
                                 if ( FG == false)
                                 {
-                                    MessageBoxMidle.Show(this, "该IP地址无法访问，请填入正确IP！", "提示");
+                                    MessageBoxMidle.Show(this, "网络错误！请检查网络连接是否正常？ip地址设置是否正确？", "提示");
                                 }
                                 else
                                 {
@@ -544,7 +702,7 @@ namespace _485刷机_Net_3._5
                            if (string.IsNullOrEmpty(pathtextBox.Text))
                            {
                                 EnableButton();
-                                MessageBoxMidle.Show(this, "文件路径为空，请重新选择。", "提示！");
+                                MessageBoxMidle.Show(this, "请选择你要下载的ARM.Hex文件！", "提示！");
                                 return;
                            }
 
@@ -638,45 +796,104 @@ namespace _485刷机_Net_3._5
                                 else
                                 {
                                     EnableButton();
-                                    MessageBoxMidle.Show("导入文件类型错误，非*.hex或*.bin类型文件！\r\n" + "请重新导入。", "文件错误");
+                                    MessageBoxMidle.Show("导入文件类型错误\r\n" + "请重新导入。", "文件错误");
                                     pathtextBox.Clear();
                                     return;
                                 }
                                 Console.WriteLine($"filedata = {Commentclass.CommentFileData.Length}.");
-                                //加上文件大小判断
-                                if (Commentclass.CommentFileData.Length < (int)Commentclass.MainBordMinimalSize || Commentclass.CommentFileData.Length > (int)Commentclass.MainBordMaximalSize)  //文件小于90k的和大于200k的都不行
-                                {
-                                    EnableButton();
-                                    MessageBoxMidle.Show("导入文件大小错误，非主控板ARM刷机文件！\r\n" + "请重新导入。", "文件错误");
-                                    return;
-                                }
+                               
+                                
+                                
+                                
+                                
 
-                                if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件
+                                if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件，截取后比对大小
                                 {
+                                    if (Commentclass.CommentFileData.Length < (int)Commentclass.MainBoardFileBinSizeMin || Commentclass.CommentFileData.Length > (int)Commentclass.MainBoardFileBinSizeMax)  //文件小于90k的和大于200k的都不行
+                                    {
+                                        EnableButton();
+                                        MessageBoxMidle.Show("当前导入的程序文件有误！请重新导入正确的程序文件!", "文件错误");
+                                        return;
+                                    }
+
                                     Commentclass.CommentBackack = ReadFiles.FragmentCode(Commentclass.MainbordRedirectionAddr, Commentclass.MainbordCodeStartAddr, (UInt64)Commentclass.CommentFileData.Length,
                                                                                      Commentclass.MainbordIniRecordBootloaderSize, Commentclass.MainbordBootloaderHeadFlag, Commentclass.CommentFileData, out Commentclass.CutSectorFileData);
-                                }
 
-                                if (Commentclass.CommentBackack == "ok")
-                                {
-                                    //重新覆盖刷机文件
-                                    if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件
+                                    if (Commentclass.CommentBackack == "ok")
                                     {
                                         Commentclass.CommentFileData = new byte[Commentclass.CutSectorFileData.Length];
                                         Buffer.BlockCopy(Commentclass.CutSectorFileData, 0, Commentclass.CommentFileData, 0, Commentclass.CutSectorFileData.Length);
-                                    }
-                                    
-                                    Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                                        Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                                        //判断主控板的刷机文件是否合适
+                                        if (((ulong)Commentclass.CommentFileData.Length < Commentclass.MainBoardFileBinSizeMin) || (ulong)Commentclass.CommentFileData.Length > Commentclass.MainBoardFileBinSizeMax)
+                                        {
 
-                                    //判断主控板的刷机文件是否合适
-                                    if (((uint)Commentclass.CommentFileLength < Commentclass.MainBoardFileSizeMin) || ((uint)Commentclass.CommentFileLength > Commentclass.MainBoardFileSizeMax))
+                                            MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                                            EnableButton();
+                                            return;
+                                        }
+                                    }
+                                    else
                                     {
                                         EnableButton();
-                                        MessageBoxMidle.Show(this, "刷机文件有误，请重新导入!", "提示!");
+                                        MessageBox.Show(Commentclass.CommentBackack + "程序文件截取失败，识别不到扇区HeadFlag信息！请选择正确的程序文件！", "cut_out_err");
                                         return;
                                     }
-                                   
-         
+                                }
+                                else if (Path.GetExtension(pathtextBox.Text) == ".hex")//如果是.bin文件
+                                {
+                                    Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                                    //判断主控板的刷机文件是否合适
+                                    if (((ulong)Commentclass.CommentFileData.Length < Commentclass.MainBoardFileHexSizeMin) || ((ulong)Commentclass.CommentFileData.Length > Commentclass.MainBoardFileHexSizeMax))
+                                    {
+
+                                        MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                                        EnableButton();
+                                        return;
+                                    }
+                                }
+                                
+
+                                /*
+                                if (Commentclass.CommentBackack == "ok")
+                                {
+                                    if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件
+                                    {
+                                        Commentclass.CommentBackack = ReadFiles.FragmentCode(Commentclass.MainbordRedirectionAddr, Commentclass.MainbordCodeStartAddr, (UInt64)Commentclass.CommentFileData.Length,
+                                                                                     Commentclass.MainbordIniRecordBootloaderSize, Commentclass.MainbordBootloaderHeadFlag, Commentclass.CommentFileData, out Commentclass.CutSectorFileData);
+
+
+                                        Commentclass.CommentFileData = new byte[Commentclass.CutSectorFileData.Length];
+                                        Buffer.BlockCopy(Commentclass.CutSectorFileData, 0, Commentclass.CommentFileData, 0, Commentclass.CutSectorFileData.Length);
+                                        Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                                        //判断主控板的刷机文件是否合适
+                                        if (((ulong)Commentclass.CommentFileData.Length < Commentclass.MainBoardFileBinSizeMin) || (ulong)Commentclass.CommentFileData.Length > Commentclass.MainBoardFileBinSizeMax)
+                                        {
+
+                                            MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                                            EnableButton();
+                                            return;
+                                        }
+                                    }
+                                    else if (Path.GetExtension(pathtextBox.Text) == ".hex")//如果是.bin文件
+                                    {
+                                        //Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                                        //判断主控板的刷机文件是否合适
+                                        if (((ulong)Commentclass.CommentFileData.Length < Commentclass.MainBoardFileHexSizeMin) || ((ulong)Commentclass.CommentFileData.Length > Commentclass.MainBoardFileHexSizeMax))
+                                        {
+
+                                            MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                                            EnableButton();
+                                            return;
+                                        }
+                                    }
+
+
+
+
+
+
+
                                     ////导出Bin文件
                                     //FileStream fs = new FileStream("主控板截取文件.bin", FileMode.OpenOrCreate);
                                     //BinaryWriter binWriter = new BinaryWriter(fs);
@@ -691,7 +908,7 @@ namespace _485刷机_Net_3._5
                                     MessageBox.Show(Commentclass.CommentBackack + ":请检查是否为.或者合并.bin文件，或配置表是否符合当前目标文件", "cut_out_err");
                                     return;
                                 }
-
+                                */
                            }
                            else if (Commentclass.CommentUpgrade == 0X02)//充电板需要重新截取目标刷机文件
                            {
@@ -935,6 +1152,7 @@ namespace _485刷机_Net_3._5
                     {
                         Invoke((new System.Action(() =>//c#3.0以后代替委托的新方法
                         {
+                            if(Admin_root)
                             this.databox.AppendText("Recv"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":" + StartsCRC.zftring(Commentclass.CommentTempResive) + "\r\n" + "\r\n");
                         })));
                     }
@@ -1102,7 +1320,8 @@ namespace _485刷机_Net_3._5
                             Modbustcp.MasterWriteMultipleRegisters(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, 0x42, Commentclass.CommentTcpCodePack);
                             Invoke((new System.Action(() =>//c#3.0以后代替委托的新方法
                             {
-                                this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp)+ "\r\n");
+                                if (Admin_root)
+                                    this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp)+ "\r\n");
                             })));
 
                             Commentclass.CommentBohead[0] = (byte)(Commentclass.CommentBohead[0] + 1);
@@ -1124,13 +1343,18 @@ namespace _485刷机_Net_3._5
                             Buffer.BlockCopy(Commentclass.CommentCrcCheck, 0, Commentclass.CommentCodePack, (Commentclass.CommentBohead.Length + Commentclass.CommentCodePackTemp.Length), Commentclass.CommentCrcCheck.Length);//拼接CRC
                                                                                                                                                                                                                                 //将8位转换成为16位
                             Commentclass.CommentCodeDownloaeDuty = (((double)Commentclass.CommentStepI / (double)Commentclass.CommentPagenum) * 100);
+                            
+                            
                             Invoke(LableMessageDisplay, "程序下载中:", Commentclass.CommentCodeDownloaeDuty.ToString("0.00") + "%");
+
+                            
                             Invoke((new System.Action(() =>//c#3.0以后代替委托的新方法
                             {
                                 DownloadRate.Value = (int)(Commentclass.CommentCodeDownloaeDuty * 10);
                                 DownloadRate.Update();
                                 Application.DoEvents();
                             })));
+                            
 
                             Commentclass.CommentBackack = Modbustcp.ByteConcertUshortSum(Commentclass.CommentCodePack, out Commentclass.CommentTcpCodePack);
                             //if (Commentclass.CommentBackack != "ok")
@@ -1144,11 +1368,14 @@ namespace _485刷机_Net_3._5
                             TranspCodeTimerout.Start();//开启超时判断
 
                             Modbustcp.MasterWriteMultipleRegisters(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, 0x42, Commentclass.CommentTcpCodePack);
+
+                            
                             Invoke((new System.Action(() =>//c#3.0以后代替委托的新方法
                             {
-                                this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                if (Admin_root)
+                                    this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                             })));
-                           
+
                             Commentclass.CommentBohead[0] = (byte)(Commentclass.CommentBohead[0] + 1);
                             Commentclass.CommentBohead[1] = (byte)(0Xff - Commentclass.CommentBohead[0]);
                             Commentclass.CommentRemaind = 0x00;
@@ -1159,10 +1386,13 @@ namespace _485刷机_Net_3._5
                             Commentclass.CommentAckContinue = false;
                             TranspCodeTimerout.Start();
                             Modbustcp.MasterWriteSingleRegister(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, Commentclass.TranspEnd);
+                            
                             Invoke((new System.Action(() =>//c#3.0以后代替委托的新方法
                             {
-                                this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
-                            })));                            
+                                if (Admin_root)
+                                    this.databox.AppendText("Send"+ "(" + DateTime.Now.ToString("ss fff")+ ")" + ":"  + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                            })));
+
                         }
                         //Console.WriteLine("123456789");
                     }
@@ -1262,8 +1492,10 @@ namespace _485刷机_Net_3._5
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
                                         Console.WriteLine($"发送第一帧命令");
+
                                         Invoke(LableMessageDisplay, "状态:", "跳转命令发送中...");
-                                        this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));                          
                                 }
                             }
@@ -1279,6 +1511,10 @@ namespace _485刷机_Net_3._5
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
                                         AckTimerOut_timer.Stop();
+                                        if ((Commentclass.CommentBackAddress[0] & 0x0100) == 0x0100)
+                                        {
+                                            MessageBox.Show("ENPO为使能状态(DI0 = 1)，不允许以太网升级！", "提示");
+                                        }
                                         MessageBoxMidle.Show(this, "与DSP第1次握手失败，请重新下载！", "提示！");//尝试主控板进入刷机第一帧命令无响应
                                         EnableButton();
                                     })));
@@ -1301,7 +1537,7 @@ namespace _485刷机_Net_3._5
                                 }
       
                             }
-                            if (Modbustcp.ComparerWriteMultipleRegisters(Commentclass.CommentSendRegist, Commentclass.CommentBackAddress)&& Commentclass.CommentTryCount >0)
+                            if (Modbustcp.ComparerWriteMultipleRegisters(Commentclass.CommentSendRegist, Commentclass.CommentBackAddress) && Commentclass.CommentTryCount > 0)
                             {
                                 for (int i = 0; i < 4; i++)
                                 {
@@ -1315,8 +1551,10 @@ namespace _485刷机_Net_3._5
                                 {
                                     AckTimerOut_timer.Stop();
                                 })));
-                                
+
                             }
+
+                            
                             break;
                         case 0x02:      //发送第二帧跳转命令，确认响应后执行0x12，去断开以太网重连
                             if (!Commentclass.CommentTimerState)
@@ -1345,7 +1583,8 @@ namespace _485刷机_Net_3._5
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
                                         Console.WriteLine($"发送第二帧命令");
-                                        this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                 
                                 }
@@ -1471,7 +1710,8 @@ namespace _485刷机_Net_3._5
                                             Modbustcp.MasterWriteSingleRegister(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, Commentclass.TranspAimdsp);//06功能码
                                             Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                             {
-                                                this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                                if (Admin_root)
+                                                    this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                             })));
                                            
                                             break;
@@ -1479,7 +1719,8 @@ namespace _485刷机_Net_3._5
                                             Modbustcp.MasterWriteSingleRegister(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, Commentclass.TranspAimcdb);//06功能码
                                             Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                             {
-                                                this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                                if (Admin_root)
+                                                    this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                             })));
                                             break;
                                     }
@@ -1575,7 +1816,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                    
                                 }
@@ -1627,7 +1869,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                         Invoke(LableMessageDisplay, "状态:", "DSP解锁中...");
                                     })));
                      
@@ -1761,7 +2004,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                     
                                 }
@@ -1819,7 +2063,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                     
                                 }
@@ -1934,7 +2179,8 @@ namespace _485刷机_Net_3._5
                                 Modbustcp.MasterWriteMultipleRegisters(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, 0x03, Commentclass.CommentDspOrderErase);//10功能码                           
                                 Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                 {
-                                    this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                    if (Admin_root)
+                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                 })));
                                
                                 Invoke(LableMessageDisplay, "状态:", "Flash擦除中...");
@@ -1957,7 +2203,8 @@ namespace _485刷机_Net_3._5
                                         if (messdr == DialogResult.Yes)
                                         {
                                             Modbustcp.MasterWriteMultipleRegisters(Commentclass.CommentMbtcp_TID, Commentclass.CommentMbAddress, 0x00, 0x03, Commentclass.CommentDspOrderErase);//10功能码           
-                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                            if (Admin_root)
+                                                this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                             AckTimerOut_timer.Start();
                                             Commentclass.CommentDspAbraseTimerOut = 0x00;
                                         }
@@ -2071,7 +2318,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send" + "(" + DateTime.Now.ToString("ss fff") + ")" + ":" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                     
                                 }
@@ -2146,7 +2394,8 @@ namespace _485刷机_Net_3._5
                                     Commentclass.CommentAckTimerout = false;
                                     Invoke((new System.Action(() =>                     //c#3.0以后代替委托的新方法
                                     {
-                                        this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
+                                        if (Admin_root)
+                                            this.databox.AppendText("Send:" + StartsCRC.zftring(Commentclass.CommentDisplayTemp) + "\r\n");
                                     })));
                                    
                                 }
@@ -2250,26 +2499,35 @@ namespace _485刷机_Net_3._5
         #endregion
 
         #region 失能按键
+        bool Is_loading;
         private void DisableButton()
         {
+            Is_loading = true;
             menuStrip1.Enabled = false;
             btnlink.Enabled = false;
             btnlabview.Enabled = false;
+            this.groupBox2.Enabled = false;
+            this.groupBox3.Enabled = false;
         }
         #endregion
 
         #region 使能按键
         private void EnableButton()
-        {           
+        {
+            Is_loading = false;
             btnlink.Enabled = true;
             btnlabview.Enabled = true;
             menuStrip1.Enabled = true;
+            this.groupBox2.Enabled = true;
+            this.groupBox3.Enabled = true;
+            
         }
         #endregion
 
         #region 变量初始化函数
         public void MainPrarInit()
         {
+            Commentclass.CommentUpgrade = 0X00;
             Commentclass.CommentBohead[0] = 0x01;
             Commentclass.CommentBohead[1] = 0xfe;
             Commentclass.CommentStepI = 0x00;
@@ -2592,5 +2850,11 @@ namespace _485刷机_Net_3._5
             }
         }
         #endregion
+
+        private void ip_textBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            Commentclass.CommentIP = this.databox.Text;
+            RegistryKeyLi.WriteRegistryKey(Commentclass.CommentIP, Commentclass.CommentPublicResgistryKeyPath, "CommentIP");
+        }
     }
 }

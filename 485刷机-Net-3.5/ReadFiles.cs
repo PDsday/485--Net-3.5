@@ -151,7 +151,78 @@ namespace _485刷机_Net_3._5
             }
             catch (Exception err)
             {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = ("D:\\");
+                ofd.Filter = "|*.bin;*.hex";                               //设置当前文件名筛选器字符串
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    realypath = ofd.FileName;
+                    // WritePrivateProfileString(strOne, "DSPData_Source", pathtextBox.Text, str);
+                    Debug.WriteLine("已打开文件");
+                }
+                else
+                {
+                    realypath = " ";
+                    return Cancel;
+                    Debug.WriteLine("取消打开文件");
+                }
                 return err.Message;
+                return err.Message;
+            }
+            return Result;
+        }
+
+        public static string CommentOpenFiles(string failpath, out string realypath,string filter)
+        {
+            string Result = "ok";
+            string Cancel = "ds";
+            realypath = "D:\\";
+            try
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                if (string.IsNullOrEmpty(failpath))
+                {
+                    ofd.InitialDirectory = ("D:\\");
+                }
+                else
+                {
+                    int i = failpath.LastIndexOf("\\");             //获取字符串最后一个斜杠的位置
+                    string path = failpath.Substring(0, i);         //取当前目录的字符串第一个字符到最后一个斜杠所在位置。;
+                    ofd.InitialDirectory = (path);
+                }
+                ofd.Filter = filter;                               //设置当前文件名筛选器字符串
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    realypath = ofd.FileName;
+                    // WritePrivateProfileString(strOne, "DSPData_Source", pathtextBox.Text, str);
+                    Debug.WriteLine("已打开文件");
+                }
+                else
+                {
+                    realypath = " ";
+                    return Cancel;
+                    Debug.WriteLine("取消打开文件");
+                }
+            }
+            catch (Exception err)
+            {
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = ("D:\\");
+                ofd.Filter = filter;                               //设置当前文件名筛选器字符串
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    realypath = ofd.FileName;
+                    // WritePrivateProfileString(strOne, "DSPData_Source", pathtextBox.Text, str);
+                    Debug.WriteLine("已打开文件");
+                }
+                else
+                {
+                    realypath = " ";
+                    return Cancel;
+                    Debug.WriteLine("取消打开文件");
+                }
+                return err.Message;
+
             }
             return Result;
         }
@@ -322,5 +393,9 @@ namespace _485刷机_Net_3._5
 
         //}
         #endregion
+
+
+
+
     }
 }

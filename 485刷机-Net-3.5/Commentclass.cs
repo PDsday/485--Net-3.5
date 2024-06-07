@@ -1,7 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
+using System.IO;
+using System.Diagnostics;
+using System.Web.UI.WebControls;
+using System.Runtime.InteropServices;//调用外部的DLL
+using System.Drawing;
 
 namespace _485刷机_Net_3._5
 {
@@ -16,6 +23,7 @@ namespace _485刷机_Net_3._5
     {
         public static Form1 fm1 = new Form1();  //主控板
         public static Form2 fm2 = new Form2();  //充电板
+        public static Form8 fm8 = new Form8();  //充电ARM（以太网）
         public static Form3 fm3 = new Form3();  //DSP升级
         public static Form7 fm7 = new Form7();  //DSP升级（以太网）
         public static Form4 fm4 = new Form4();  //界面选择
@@ -383,6 +391,11 @@ namespace _485刷机_Net_3._5
 
         public static UInt64 DSPBoardFileSizeMin = 512 * 1024;//默认512kb
         public static UInt64 DSPBoardFileSizeMax = 512 * 1024;//默认512kb
+
+        public static UInt64 MainBoardFileHexSizeMin = 100 * 1024;//默认100kb
+        public static UInt64 MainBoardFileHexSizeMax = 300 * 1024;//默认300kb
+        public static UInt64 MainBoardFileBinSizeMin = 100 * 1024;//默认100kb
+        public static UInt64 MainBoardFileBinSizeMax = 300 * 1024;//默认300kb
         #endregion
 
         #region 以太网通信相关
@@ -438,6 +451,71 @@ namespace _485刷机_Net_3._5
         public static Double CommentCodeDownloaeDuty = 0;                               //刷机进程百分比显示
                                                                                         //
         public static bool DisplayMonitor = false;    //是否显示监控窗口
+        #endregion
+
+        #region David新增
+        public static bool IsHideMainBorde = true;
+        public static bool IsAddDspBordLoad = false;
+
+      
+        [System.CLSCompliant(false)]
+        // [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+
+        private static System.Diagnostics.Process p;
+        public static void  menuItem4_ItemClicked(object sender, EventArgs e)
+        {
+            Debug.WriteLine("David--用户点击");
+            
+            if (p == null)
+            {
+                string file_path = "PyQt5FlashLoader_ISP_DSP.exe";
+                if (File.Exists(file_path))
+                {
+                   // MessageBox.Show("文件存在，正在打开");
+                    /* p.StartInfo.UseShellExecute = false; //必需
+ 
+                        p.StartInfo.RedirectStandardOutput = true;//输出参数设定
+ 
+                        p.StartInfo.RedirectStandardInput = true;//传入参数设定
+ 
+                        p.StartInfo.CreateNoWindow = true;
+ 
+                        p.StartInfo.Arguments = @"D:\打包文件\dist\original RMS.csv";//参数以空格分隔，如果某个参数为空，可以传入””
+                     */
+                    p = new System.Diagnostics.Process();
+                    p.StartInfo.FileName = file_path;
+                    p.StartInfo.WorkingDirectory = Application.StartupPath;
+                    p.StartInfo.Arguments = "";
+                    p.StartInfo.RedirectStandardInput = true;
+                    p.StartInfo.CreateNoWindow = true;
+                    p.StartInfo.UseShellExecute = false;
+                    p.Start();
+                }
+                else
+                {
+                    MessageBox.Show("exe文件不程序运行目录下", "Tips");
+                }
+
+            }
+            else
+            {
+                if (p.HasExited) //是否正在运行
+                {
+                    p.Start();
+                }
+            }
+
+            if (p != null)
+            {
+                p.StartInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Normal;
+            }
+            
+
+        }
+
+
+      
+
         #endregion
     }
 }

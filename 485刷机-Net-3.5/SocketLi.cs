@@ -109,9 +109,11 @@ namespace _485刷机_Net_3._5
                 {
                     byte[] arrMsgRec = new byte[1024 * 1024 * 2];           //定义一个2M的缓冲区
                     int length = sockClient.Receive(arrMsgRec);
+                    // Console.WriteLine("接收：" + StartsCRC.zftring(arrMsgRec));
+                    //Console.WriteLine($"以太网测试：length = {length}.");
                     if (length == 0)
                         return NoResult;
-                    Console.WriteLine($"length = {length}.");
+                    
                     data = new byte[length];
                     Array.Copy(arrMsgRec, data, length);
                 }

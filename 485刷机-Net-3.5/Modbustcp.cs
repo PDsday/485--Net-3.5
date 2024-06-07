@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 /***********************ModbusTcp功能码***********************
  * （1）01：读1路或者多路开关量线圈输出状态
  * （2）02：读1路或者多路开关量状态输入
@@ -81,7 +82,7 @@ namespace _485刷机_Net_3._5
             Commentclass.CommentSendRegist[3] = Commentclass.HMI_Tx_modbus[11];
             //以太网发送
             SocketLi.SocketSendData(Commentclass.HMI_Tx_modbus, (mblength+0x06));
-            Console.WriteLine($"mblength = {(mblength + 0x06)}.");
+            //Console.WriteLine($"mblength = {(mblength + 0x06)}.");
             #region 告知显示线程
             Commentclass.CommentDisplayTemp = new byte[(mblength + 0x06)];
             Array.Copy(Commentclass.HMI_Tx_modbus, Commentclass.CommentDisplayTemp, (mblength + 0x06));
@@ -408,15 +409,35 @@ namespace _485刷机_Net_3._5
             byte two = (byte)regs[0];
             byte three = (byte)(regs[1] >> 8);
             byte four= (byte)regs[1];
-            if (one == data[0] && two == data[1] && three == data[2] && four == data[3])
+            if ((one == data[0] | ((one & 0x01)==0x00) ) && three == data[2] && four == data[3])
             {
                 return true;
             }
             else
             {
+                //MessageBox.Show("ENPO为使能状态(DI0 = 1)，不允许以太网升级！","提示");
                 return false;
             }
         }
+
+        public static bool ComparerWriteMultipleRegisters2(byte[] data, ushort[] regs)
+        {
+            byte one = (byte)(regs[0] >> 8);
+            byte two = (byte)regs[0];
+            byte three = (byte)(regs[1] >> 8);
+            byte four = (byte)regs[1];
+            if ((one == data[0] | ((one & 0x01) == 0x00)) && three == data[2] && four == data[3])
+            {
+                return true;
+            }
+            else
+            {
+                MessageBox.Show("ENPO为使能状态(DI0 = 1)，不允许以太网升级！", "提示");
+                return false;
+            }
+        }
+
+
         #endregion
 
         #region 10功能码数据比较类02

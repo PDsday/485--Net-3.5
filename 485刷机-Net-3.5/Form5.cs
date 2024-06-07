@@ -191,7 +191,7 @@ namespace _485刷机_Net_3._5
             // sockClient.Shutdown(SocketShutdown.Both);
             sockClient = null;
             thrClient = null; //关闭线程
-            Commentclass.fm3.Show();
+            //Commentclass.fm3.Show();
             this.Dispose();
         }
     }

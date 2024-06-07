@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -137,14 +138,14 @@ namespace _485刷机_Net_3._5
                 string path = pathstr.Substring(0, i);//取当前目录的字符串第一个字符到最后一个斜杠所在位置。;
                 if (Directory.Exists(path))
                 {
-                    pathtextBox.Text = pathstr;
+                   // pathtextBox.Text = pathstr;
                     Console.WriteLine($"ini文件存在");
 
                 }
                 else
                 {
                     //MessageBoxMidle.Show(".ini配置文件导入错误，禁止进行刷机操作。\r\n" + "请联系软件人员。", "严重错误！");
-                    pathtextBox.Text = "";
+                  //  pathtextBox.Text = "";
                     //Console.WriteLine($"ini文件不存在");
                 }
             }
@@ -277,7 +278,7 @@ namespace _485刷机_Net_3._5
               //  Console.WriteLine($"MainBordMinimalSize = {Commentclass.MainBordMinimalSize }.");
                 // Debug.WriteLine("lokokom");               //the likes printf      
                 timer4.Start();
-                toolStripMenuItem1.BackColor = System.Drawing.Color.Chartreuse;
+                //toolStripMenuItem1.BackColor = System.Drawing.Color.Chartreuse;
                 //boundcomboBox.Enabled = true;
             }
             catch (Exception err)
@@ -285,6 +286,195 @@ namespace _485刷机_Net_3._5
                 MessageBoxMidle.Show(this, err.ToString(), "错误");
             }
         }
+
+
+        private void David_Form1_Load(object sender, EventArgs e)
+        {
+            //fmjump重新规定 ：00          01           02              03             04           05 
+            //            DSP升级    充ARM485     充电ARM(Eth)       主ARM485       主ARM(Eth)    DspBootload
+            //             Form3        Form2        Form8（新）       From1           From7        外部exe
+            //无处理
+            Commentclass.MainBoardFileHexSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainHexMin", "None", IniFilesPath)) * 1024;
+            //主控板目标文件的最大值
+            Commentclass.MainBoardFileHexSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainHexMax", "None", IniFilesPath)) * 1024;
+            //读取刷机文件(主控板)大小限制参数
+            Commentclass.MainBoardFileBinSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBinMin", "None", IniFilesPath)) * 1024;
+            //主控板目标文件的最大值
+            Commentclass.MainBoardFileBinSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "MainBinMax", "None", IniFilesPath)) * 1024;
+
+
+            #region 原Init文件处理
+            string[] ports = System.IO.Ports.SerialPort.GetPortNames();//获取电脑上可用的串口号
+            serialcomboBox.Items.AddRange(ports);      //给端口号选择窗口添加数据
+            serialcomboBox.SelectedIndex = serialcomboBox.Items.Count > 0 ? 0 : -1;  //如果里面有数据显示第零个
+
+
+            this.Text = ReadINIFiles.ReadIniData("UserConfig", "ApplicationName", "None", IniFilesPath);
+            //Console.WriteLine("David--"+IniFilesPath);
+
+           
+
+            //进行相关的信息录入
+            //读取ini文件,获取主控板ARM的 BootloaderHeadFlag 、CodeStartAddr、RedirectionAddr
+            //var ReadIniTempFlag0 = ReadINIFiles.ReadIniData("MainBordMessage", "MainBordBootloaderHeadFlagINI", "None", IniFilesPath);
+            var ReadIniTempFlag0 = Commentclass.SettingMessageList[0];
+            // Console.WriteLine($"ZKReadIniTemp = {ReadIniTempFlag0}.");
+            string[] nametake0 = ReadIniTempFlag0.Split(",".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            for (int i = 0; i < 16; i++)
+            {
+                Commentclass.MainbordBootloaderHeadFlag[i] = Convert.ToByte(nametake0[i], 16);
+                //    Console.WriteLine($"ZKBootloaderHeadFlag = {Commentclass.MainbordBootloaderHeadFlag[i].ToString("x")}.");
+            }
+
+            //获取CodeStartAddr
+            //var ReadIniTempStartAddr0 = ReadINIFiles.ReadIniData("MainBordMessage", "MainBordCodeStartAddrINI", "None", IniFilesPath);
+            var ReadIniTempStartAddr0 = Commentclass.SettingMessageList[1];
+            Commentclass.MainbordCodeStartAddr = Convert.ToUInt64(ReadIniTempStartAddr0, 16);
+            //  Console.WriteLine($"ZKCodeStartAddr = {"0X" + Commentclass.MainbordCodeStartAddr.ToString("x")}.");
+
+            //获取RedirectionAddr
+            //var ReadIniTempTionAddr0 = ReadINIFiles.ReadIniData("MainBordMessage", "MainBordRedirectionAddrINI", "None", IniFilesPath);
+            var ReadIniTempTionAddr0 = Commentclass.SettingMessageList[2];
+            Commentclass.MainbordRedirectionAddr = Convert.ToUInt64(ReadIniTempTionAddr0, 16);
+            //   Console.WriteLine($"ZKRedirectionAddr = {"0X" + Commentclass.MainbordRedirectionAddr.ToString("x")}.");
+            Commentclass.MainbordIniRecordBootloaderSize = Commentclass.MainbordRedirectionAddr - Commentclass.MainbordCodeStartAddr;
+
+
+
+            //是否开启0xff校验
+            string enable = ReadINIFiles.ReadIniData("ENABLECHECK", "AdvancedVerification", "None", IniFilesPath);
+            Console.WriteLine($"enable = {enable}.");
+            if (enable == "false")
+            {
+                Commentclass.ChexkActionEnable = false;
+            }
+
+            
+
+
+
+            databox.Location = new Point(9, 34);
+            databox.Size = new Size(386, 140);
+
+            //  Console.WriteLine($"MainBordMaximalSize = {Commentclass.MainBordMaximalSize}.");
+            //  Console.WriteLine($"MainBordMinimalSize = {Commentclass.MainBordMinimalSize }.");
+            // Debug.WriteLine("lokokom");               //the likes printf      
+            timer4.Start();
+            //toolStripMenuItem1.BackColor = System.Drawing.Color.Chartreuse;
+            //boundcomboBox.Enabled = true;
+            #endregion
+
+            Commentclass.CommentRuningKyeName = Commentclass.CommentMainResgistryKeyName;
+            //读取路径，按读到的路径打开相应的文件路径
+            RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentRuningKyeName, out Commentclass.CommentReadSavePath);
+            Console.WriteLine($"读出来的路径 = {Commentclass.CommentReadSavePath}.");
+            if (Commentclass.CommentReadSavePath == "" | Commentclass.CommentReadSavePath == string.Empty)
+            {
+                Commentclass.CommentReadSavePath = "D:\\";
+            }
+            pathtextBox.Text = Commentclass.CommentReadSavePath;
+
+            Admin_UI();
+        }
+
+        /// <summary>
+        /// 注册表客户模式下隐藏住485刷机
+        /// </summary>
+        void Admin_UI()
+        {
+            this.boundcomboBox.Visible = false;
+            this.label2.Visible = false;
+            string msg;
+            this.toolStripStatusLabel4.Visible = false;
+            RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentAppTargetResgistryKeyName, out msg);
+            Console.WriteLine("模式：" + msg);
+            if (msg == "User_Client")
+            {
+                this.menuStrip1.Items[1].Visible = false;
+                this.menuStrip1.Items[3].Visible = false;
+                this.menuStrip1.Items[5].Visible = false;
+
+                
+
+                this.Width = 450;
+            }
+
+        }
+
+        #region 取代旧版的窗口跳转逻辑
+        private void Menustrip_Change(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+            //fmjump重新规定 ：00          01           02              03             04           05 
+            //            DSP升级    充ARM485     充电ARM(Eth)       主ARM485       主ARM(Eth)    DspBootload
+            //             Form3        Form2        Form8（新）       From1           From7        外部exe
+
+            Console.WriteLine(e.ClickedItem);
+
+            switch (e.ClickedItem.Text)
+            {
+                case "DSP以太网升级":
+                    if (Commentclass.fmjump != 0x00)
+                    {
+                        Commentclass.fm3.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm3.Show();
+                        Commentclass.fmjump = 0x00;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器485升级":
+                    if (Commentclass.fmjump != 0x01)
+                    {
+                        Commentclass.fm2.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm2.Show();
+                        Commentclass.fmjump = 0x01;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器以太网升级":
+                    if (Commentclass.fmjump != 0x02)
+                    {
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Console.WriteLine(this.Location.X.ToString() + "   " + this.Location.Y.ToString());
+                        Commentclass.fm8.Show();
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fmjump = 0x02;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM 485升级":
+                    if (Commentclass.fmjump != 0x03)
+                    {
+                        Commentclass.fm1.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm1.Show();
+                        Commentclass.fmjump = 0x03;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM以太网升级":
+                    if (Commentclass.fmjump != 0x04)
+                    {
+                        Commentclass.fm7.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm7.Show();
+                        Commentclass.fmjump = 0x04;
+                        this.Hide();
+                    }
+                    break;
+                case "DspBootLoad":
+                    {
+                        //暂定
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+
+
+        }
+
+        #endregion
         #endregion
 
         #region 委托
@@ -402,7 +592,31 @@ namespace _485刷机_Net_3._5
             }
             catch (Exception err)
             {
-                MessageBoxMidle.Show("文件路径错误，请检查文件路径格式。", "路径错误");
+                //MessageBoxMidle.Show("文件路径错误，请检查文件路径格式。", "路径错误");
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = ("D:\\");
+                ofd.Filter = "bin文件;hex文件|*.bin;*.hex";//设置当前文件名筛选器字符串
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    this.pathtextBox.Text = ofd.FileName;
+                    if (Path.GetExtension(pathtextBox.Text) == ".hex")//如果是.hex文件
+                    {
+                        commentpath = System.Windows.Forms.Application.StartupPath + ".\\ZKBIN.\\ZKBIN.bin";
+                        Console.WriteLine($"导入为hex文件");
+                    }
+                    else if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件
+                    {
+                        commentpath = pathtextBox.Text;
+                        Console.WriteLine($"导入为bin文件");
+                    }
+                    WritePrivateProfileString(strOne, "ZKARMData_Source", pathtextBox.Text, str);
+                    Console.WriteLine($"path = {pathtextBox.Text}.");
+                }
+                else
+                {
+                    Debug.WriteLine("取消打开文件");            //the likes printf
+                    return;
+                }
             }
         }
         #endregion
@@ -410,6 +624,7 @@ namespace _485刷机_Net_3._5
         #region 开始下载程序
         private void loadbutton_Click_1(object sender, EventArgs e)
         {
+            
             StackTrace st = new StackTrace(new StackFrame(true));
             DavidDebug.showMsg("点击下载按键", st);
             Commentclass.CommentSpecialMainNumCheck = Convert.ToUInt16(Commentclass.SettingMessageList[8]);
@@ -435,6 +650,10 @@ namespace _485刷机_Net_3._5
             //databox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             databox.Show();
             toolStripStatusLabel1.Text = "等待校验中...";
+
+            //保存文件地址
+            RegistryKeyLi.WriteRegistryKey(this.pathtextBox.Text, Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentMainResgistryKeyName);
+
             load_file_onthepath();
         }
         #endregion
@@ -472,18 +691,46 @@ namespace _485刷机_Net_3._5
                 else
                 {
                     enable_function();
-                    MessageBoxMidle.Show("导入文件类型错误，非*.hex或*.bin类型文件！\r\n" + "请重新导入。", "文件错误");
+                    MessageBoxMidle.Show("请选择要下载的ARM.hex文件！！" , "文件错误");
                     pathtextBox.Clear();
                     return;
                 }
                 Console.WriteLine($"filedata = {filedata.Length}.");
-                //加上文件大小判断
+
+                /*
                 if (filedata.Length < (int)Commentclass.MainBordMinimalSize || filedata.Length > (int)Commentclass.MainBordMaximalSize)  //文件小于90k的和大于200k的都不行
                 {
                     enable_function();
                     MessageBoxMidle.Show("导入文件大小错误，非主控板ARM刷机文件！\r\n" + "请重新导入。", "文件错误");
                     return;
                 }
+                */
+                //根据文件后缀名做新的大小判断
+                if (Path.GetExtension(pathtextBox.Text) == ".bin")//如果是.bin文件
+                {
+                    //Commentclass.CommentFileData = new byte[Commentclass.CutSectorFileData.Length];
+                    //Buffer.BlockCopy(Commentclass.CutSectorFileData, 0, Commentclass.CommentFileData, 0, Commentclass.CutSectorFileData.Length);
+                    //Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                    //判断主控板的刷机文件是否合适
+                    if (((uint)filedata.Length < Commentclass.MainBoardFileBinSizeMin) || ((uint)filedata.Length > Commentclass.MainBoardFileBinSizeMax))
+                    {
+                        enable_function();
+                        MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                        return;
+                    }
+                }
+                else if (Path.GetExtension(pathtextBox.Text) == ".hex")//如果是.bin文件
+                {
+                    //Commentclass.CommentFileLength = (uint)Commentclass.CommentFileData.Length;
+                    //判断主控板的刷机文件是否合适
+                    if (((uint)filedata.Length < Commentclass.MainBoardFileHexSizeMin) || ((uint)filedata.Length > Commentclass.MainBoardFileHexSizeMax))
+                    {
+                        enable_function();
+                        MessageBoxMidle.Show(this, "当前导入的程序文件有误！请重新导入正确的程序文件!", "提示!");
+                        return;
+                    }
+                }
+
                 //提示
                 DialogResult messdr = MessageBoxMidle.Show(this, "请先打手动开关进入手动模式！\r\n是否已完成该操作？", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                 if (messdr == DialogResult.No)
@@ -788,7 +1035,7 @@ namespace _485刷机_Net_3._5
             serialPort1.Read(Resive_data, 0, len);      //把数据读取到buff数组
             Invoke((new Action(() =>                    //c#3.0以后代替委托的新方法
             {
-                Console.WriteLine("Daivd---Resive:"+BitConverter.ToString(Resive_data).Replace("-", ""));
+                //Console.WriteLine("Daivd---Resive:"+BitConverter.ToString(Resive_data).Replace("-", ""));
                 if (powerdisplay)
                 {
                     Invoke(myRcvMsgfm1, "接收：" + StartsCRC.zftring(Resive_data));
@@ -1291,7 +1538,7 @@ namespace _485刷机_Net_3._5
         #region 图片刷新函数
         private void timer5_Tick(object sender, EventArgs e)
         {
-            Pic_Vision();
+           // Pic_Vision();
         }
         #endregion
 
@@ -1514,6 +1761,7 @@ namespace _485刷机_Net_3._5
             menuStrip1.Enabled = false;
             loadbutton.Enabled = false;
             filebutton.Enabled = false;
+            this.groupBox1.Enabled = false;
         }
 
         private void enable_function()
@@ -1521,6 +1769,7 @@ namespace _485刷机_Net_3._5
             menuStrip1.Enabled = true;
             loadbutton.Enabled = true;
             filebutton.Enabled = true;
+            this.groupBox1.Enabled = true;
         }
 
         #region 一键擦除功能

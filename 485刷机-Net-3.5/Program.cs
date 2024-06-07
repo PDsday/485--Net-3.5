@@ -24,6 +24,7 @@ namespace _485刷机_Net_3._5
             if (isValidUser == 0x01)
             {
                 Application.Run(new Form3());
+                
             }
             else if (isValidUser == 0x02)
             {

@@ -36,6 +36,8 @@ namespace _485刷机_Net_3._5
             //寄存器数量
             Bin_Head[10] = (byte)(REGITE / 256);
             Bin_Head[11] = (byte)(REGITE % 256);
+
+            Console.WriteLine("REGITE:" + REGITE);
             //字节长度
             Bin_Head[12] = Length;
 

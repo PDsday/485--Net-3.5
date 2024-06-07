@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
@@ -133,11 +134,11 @@ namespace _485刷机_Net_3._5
                 string path = pathstr.Substring(0, i);//取当前目录的字符串第一个字符到最后一个斜杠所在位置。;
                 if (Directory.Exists(path))
                 {
-                    cdtextfile.Text = pathstr;
+                   // cdtextfile.Text = pathstr;
                 }
                 else
                 {
-                    cdtextfile.Text = "";
+                  //  cdtextfile.Text = "";
                 }
             }
             #endregion
@@ -146,259 +147,16 @@ namespace _485刷机_Net_3._5
         #region 窗体加载函数
         private void Form2_Load(object sender, EventArgs e)
         {
-            if (Commentclass.fmjump == 0x01)    //从窗口1切换过来
-            {
-                this.Location = new Point(Form1.windowX, Form1.windowY);
-            }
-            else if (Commentclass.fmjump == 0x03)    //从窗口1切换过来
-            {
-                this.Location = new Point(Form3.fm3windowX, Form3.fm3windowY);
-            }
-            if (Commentclass.fmjump == 0x07)    //从窗口1切换过来
-            {
-                this.Location = new Point(Form7.windowX, Form7.windowY);
-            }
-           // Console.WriteLine("david--充电板循环下载");
-            if (Commentclass.WinDey)
-            {
 
-                //menuStrip1.Items.Remove(主控板刷机);
-                menuStrip1.Items[2].Visible=false;
-                this.Icon = IconSelect.GetFileIcon(Application.StartupPath + "\\icon\\wendey.ico");
-                menuStrip1.Items[1].Text = "充电器ARM升级";
-                menuStrip1.Items[0].Text = "DSP升级";
-                menuStrip1.Items[3].Text = "主控板ARM升级";
-                this.Text = ReadINIFiles.ReadIniData("UserConfig", "ApplicationName", "None", IniFilesPath);
-                comboBox1.Enabled = false;
-                label5.Enabled = false;
-                toolStripStatusLabel1.Text = "充ARM升级";
+        }
 
-                menuStrip1.Items[0].Font = new System.Drawing.Font("楷体", 10.8F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[1].Font = new System.Drawing.Font("楷体", 10.8F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[2].Font = new System.Drawing.Font("楷体", 10.8F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[3].Font = new System.Drawing.Font("楷体", 10.8F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+        private void David_Form2_Load(object sender, EventArgs e)
+        {
 
-                string messageini = ReadINIFiles.ReadIniData("WarnMessage", "ChargeBordMessage", "None", IniFilesPath);
-                string[] nametake3 = messageini.Split("\\r\\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                databox.Clear();
-                foreach (string str in nametake3)
-                {
-                    databox.AppendText(str + "\r\n");
-                }
-                int size = 8;
-                int x = label1.Location.X;
-                int y = label1.Location.Y;
-                label1.Location = new Point(x, y + size);
-
-                x = cdserialbox.Location.X;
-                y = cdserialbox.Location.Y;
-                cdserialbox.Location = new Point(x, y + size);
-
-                x = label2.Location.X;
-                y = label2.Location.Y;
-                label2.Location = new Point(x, y + size);
-
-
-                x = cdpoundbox.Location.X;
-                y = cdpoundbox.Location.Y;
-                cdpoundbox.Location = new Point(x, y + size);
-
-
-                x = cdloadbtn.Location.X;
-                y = cdloadbtn.Location.Y;
-                cdloadbtn.Location = new Point(x, y + size);
-
-                label5.Hide();
-                comboBox1.Hide();
-                label3.Location = new Point(7, 230 + size);
-                cdtextfile.Location = new Point(45, 225 + size);
-                cdviewbtn.Location = new Point(328, 223 + size);
-                label4.Location = new Point(7, 265 + size);
-                cdloadprogressBar.Location = new Point(45, 260 + size);
-
-                this.Size = new Size(410, 367);
-
-                Console.WriteLine($"label1x = {label1.Location.X}.");
-                Console.WriteLine($"label1y = {label1.Location.Y}.");
-                Console.WriteLine($"heigth = {databox.Height}.");
-                Console.WriteLine($"weigth = {databox.Width}.");
-                Console.WriteLine($"x = {databox.Location.X}.");
-                Console.WriteLine($"y = {databox.Location.Y}.");
-
-                //databox.Text = nametake3[0] + "\r\n" + nametake3[1] + "\r\n";
-                cdpoundbox.Enabled = false;
-                if (databox.TextLength >= 5)
-                {
-                    databox.Select(18, 10);
-                    databox.SelectionColor = Color.Red;
-                }
-
-               
-            }
-            else
-            {
-
-
-                this.Icon = IconSelect.GetFileIcon(Application.StartupPath + "\\icon\\wendey.ico");
-                this.Text = ReadINIFiles.ReadIniData("UserConfig", "ApplicationName", "None", IniFilesPath);
-                toolStripStatusLabel1.Text = "充ARM升级";
-                menuStrip1.Items[0].Text = "DSP升级";
-                menuStrip1.Items[1].Text = "充ARM升级";
-                menuStrip1.Items[2].Text = "主ARM升级(485)";
-                menuStrip1.Items[3].Text = "主ARM升级(Eth)";
-                menuStrip1.Items[0].Font = new System.Drawing.Font("楷体", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[1].Font = new System.Drawing.Font("楷体", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[2].Font = new System.Drawing.Font("楷体", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-                menuStrip1.Items[3].Font = new System.Drawing.Font("楷体", 9F, ((System.Drawing.FontStyle)((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-
-                int size = 8;
-                int x = label1.Location.X;
-                int y = label1.Location.Y;
-                label1.Location = new Point(x, y + size);
-
-                x = cdserialbox.Location.X;
-                y = cdserialbox.Location.Y;
-                cdserialbox.Location = new Point(x, y + size);
-
-                x = label2.Location.X;
-                y = label2.Location.Y;
-                label2.Location = new Point(x, y + size);
-
-                x = cdpoundbox.Location.X;
-                y = cdpoundbox.Location.Y;
-                cdpoundbox.Location = new Point(x, y + size);
-
-                x = cdloadbtn.Location.X;
-                y = cdloadbtn.Location.Y;
-                cdloadbtn.Location = new Point(x, y + size);
-
-                label5.Hide();
-                comboBox1.Hide();
-                label3.Location = new Point(7, 230 + size);
-                cdtextfile.Location = new Point(45, 225 + size);
-                cdviewbtn.Location = new Point(328, 223 + size);
-                label4.Location = new Point(7, 265 + size);
-                cdloadprogressBar.Location = new Point(45, 260 + size);
-
-                this.Size = new Size(410, 367);
-            }
-            databox.Location = new Point(9, 34);
-            databox.Size = new Size(386, 140);
-
-            //获取信息
-            ////端口lable 
-            //Commentclass.PortlablePointdata.x = label1.Location.X;
-            //Commentclass.PortlablePointdata.y = label1.Location.Y;
-            //Commentclass.PortlablePointdata.weith = label1.Width;
-            //Commentclass.PortlablePointdata.heigth = label1.Height;
-
-            //Console.WriteLine($"Commentclass.PortlablePointdata.x  = {Commentclass.PortlablePointdata.x };");
-            //Console.WriteLine($"Commentclass.PortlablePointdata.y  = {Commentclass.PortlablePointdata.y };");
-            //Console.WriteLine($"Commentclass.PortlablePointdata.weith  = {Commentclass.PortlablePointdata.weith };");
-            //Console.WriteLine($"Commentclass.PortlablePointdata.heigth  = {Commentclass.PortlablePointdata.heigth };");
-
-            ////端口combox
-            //Commentclass.PortcomboxPointdata.x = cdserialbox.Location.X;
-            //Commentclass.PortcomboxPointdata.y = cdserialbox.Location.Y;
-            //Commentclass.PortcomboxPointdata.weith = cdserialbox.Width;
-            //Commentclass.PortcomboxPointdata.heigth = cdserialbox.Height;
-
-            //Console.WriteLine($"Commentclass.PortcomboxPointdata.x  = {Commentclass.PortcomboxPointdata.x };");
-            //Console.WriteLine($"Commentclass.PortcomboxPointdata.y  = {Commentclass.PortcomboxPointdata.y };");
-            //Console.WriteLine($"Commentclass.PortcomboxPointdata.weith  = {Commentclass.PortcomboxPointdata.weith };");
-            //Console.WriteLine($"Commentclass.PortcomboxPointdata.heigth  = {Commentclass.PortcomboxPointdata.heigth };");
-
-            ////波特率lable
-            //Commentclass.BoundlablePointdata.x = label2.Location.X;
-            //Commentclass.BoundlablePointdata.y = label2.Location.Y;
-            //Commentclass.BoundlablePointdata.weith = label2.Width;
-            //Commentclass.BoundlablePointdata.heigth = label2.Height;
-
-            //Console.WriteLine($"Commentclass.BoundlablePointdata.x  = {Commentclass.BoundlablePointdata.x };");
-            //Console.WriteLine($"Commentclass.BoundlablePointdata.y  = {Commentclass.BoundlablePointdata.y };");
-            //Console.WriteLine($"Commentclass.BoundlablePointdata.weith  = {Commentclass.BoundlablePointdata.weith };");
-            //Console.WriteLine($"Commentclass.BoundlablePointdata.heigth  = {Commentclass.BoundlablePointdata.heigth };");
-
-            ////波特率combox
-            //Commentclass.BoundcomboxPointdata.x = cdpoundbox.Location.X;
-            //Commentclass.BoundcomboxPointdata.y = cdpoundbox.Location.Y;
-            //Commentclass.BoundcomboxPointdata.weith = cdpoundbox.Width;
-            //Commentclass.BoundcomboxPointdata.heigth = cdpoundbox.Height;
-
-            //Console.WriteLine($"Commentclass.BoundcomboxPointdata.x  = {Commentclass.BoundcomboxPointdata.x };");
-            //Console.WriteLine($"Commentclass.BoundcomboxPointdata.y  = {Commentclass.BoundcomboxPointdata.y };");
-            //Console.WriteLine($"Commentclass.BoundcomboxPointdata.weith  = {Commentclass.BoundcomboxPointdata.weith };");
-            //Console.WriteLine($"Commentclass.BoundcomboxPointdata.heigth  = {Commentclass.BoundcomboxPointdata.heigth };");
-
-            ////文件lable
-            //Commentclass.FilelablePointdata.x = label3.Location.X;
-            //Commentclass.FilelablePointdata.y = label3.Location.Y;
-            //Commentclass.FilelablePointdata.weith = label3.Width;
-            //Commentclass.FilelablePointdata.heigth = label3.Height;
-
-            //Console.WriteLine($"Commentclass.FilelablePointdata.x  = {Commentclass.FilelablePointdata.x };");
-            //Console.WriteLine($"Commentclass.FilelablePointdata.y  = {Commentclass.FilelablePointdata.y };");
-            //Console.WriteLine($"Commentclass.FilelablePointdata.weith  = {Commentclass.FilelablePointdata.weith };");
-            //Console.WriteLine($"Commentclass.FilelablePointdata.heigth  = {Commentclass.FilelablePointdata.heigth };");
-
-            ////文件textbox
-            //Commentclass.FiletextboxPointdata.x = cdtextfile.Location.X;
-            //Commentclass.FiletextboxPointdata.y = cdtextfile.Location.Y;
-            //Commentclass.FiletextboxPointdata.weith = cdtextfile.Width;
-            //Commentclass.FiletextboxPointdata.heigth = cdtextfile.Height;
-
-            //Console.WriteLine($"Commentclass.FiletextboxPointdata.x  = {Commentclass.FiletextboxPointdata.x };");
-            //Console.WriteLine($"Commentclass.FiletextboxPointdata.y  = {Commentclass.FiletextboxPointdata.y };");
-            //Console.WriteLine($"Commentclass.FiletextboxPointdata.weith  = {Commentclass.FiletextboxPointdata.weith };");
-            //Console.WriteLine($"Commentclass.FiletextboxPointdata.heigth  = {Commentclass.FiletextboxPointdata.heigth };");
-
-            ////进度lable
-            //Commentclass.PrglablePointdata.x = label4.Location.X;
-            //Commentclass.PrglablePointdata.y = label4.Location.Y;
-            //Commentclass.PrglablePointdata.weith = label4.Width;
-            //Commentclass.PrglablePointdata.heigth = label4.Height;
-
-            //Console.WriteLine($"Commentclass.PrglablePointdata.x  = {Commentclass.PrglablePointdata.x };");
-            //Console.WriteLine($"Commentclass.PrglablePointdata.y  = {Commentclass.PrglablePointdata.y };");
-            //Console.WriteLine($"Commentclass.PrglablePointdata.weith  = {Commentclass.PrglablePointdata.weith };");
-            //Console.WriteLine($"Commentclass.PrglablePointdata.heigth  = {Commentclass.PrglablePointdata.heigth };");
-
-            ////进度pragre
-            //Commentclass.PrgformPointdata.x = cdloadprogressBar.Location.X;
-            //Commentclass.PrgformPointdata.y = cdloadprogressBar.Location.Y;
-            //Commentclass.PrgformPointdata.weith = cdloadprogressBar.Width;
-            //Commentclass.PrgformPointdata.heigth = cdloadprogressBar.Height;
-
-            //Console.WriteLine($"Commentclass.PrgformPointdata.x  = {Commentclass.PrgformPointdata.x };");
-            //Console.WriteLine($"Commentclass.PrgformPointdata.y  = {Commentclass.PrgformPointdata.y };");
-            //Console.WriteLine($"Commentclass.PrgformPointdata.weith  = {Commentclass.PrgformPointdata.weith };");
-            //Console.WriteLine($"Commentclass.PrgformPointdata.heigth  = {Commentclass.PrgformPointdata.heigth };");
-
-
-            ////下载
-            //Commentclass.DownbtnPointdata.x = cdloadbtn.Location.X;
-            //Commentclass.DownbtnPointdata.y = cdloadbtn.Location.Y;
-            //Commentclass.DownbtnPointdata.weith = cdloadbtn.Width;
-            //Commentclass.DownbtnPointdata.heigth = cdloadbtn.Height;
-
-
-            //Console.WriteLine($"Commentclass.DownbtnPointdata.x  = {Commentclass.DownbtnPointdata.x };");
-            //Console.WriteLine($"Commentclass.DownbtnPointdata.y  = {Commentclass.DownbtnPointdata.y };");
-            //Console.WriteLine($"Commentclass.DownbtnPointdata.weith  = {Commentclass.DownbtnPointdata.weith };");
-            //Console.WriteLine($"Commentclass.DownbtnPointdata.heigth  = {Commentclass.DownbtnPointdata.heigth };");
-
-            ////浏览
-            //Commentclass.ViewbtnPointdata.x = cdviewbtn.Location.X;
-            //Commentclass.ViewbtnPointdata.y = cdviewbtn.Location.Y;
-            //Commentclass.ViewbtnPointdata.weith = cdviewbtn.Width;
-            //Commentclass.ViewbtnPointdata.heigth = cdviewbtn.Height;
-
-            //Console.WriteLine($"Commentclass.ViewbtnPointdata.x  = {Commentclass.ViewbtnPointdata.x };");
-            //Console.WriteLine($"Commentclass.ViewbtnPointdata.y  = {Commentclass.ViewbtnPointdata.y };");
-            //Console.WriteLine($"Commentclass.ViewbtnPointdata.weith  = {Commentclass.ViewbtnPointdata.weith };");
-            //Console.WriteLine($"Commentclass.ViewbtnPointdata.heigth  = {Commentclass.ViewbtnPointdata.heigth };");
-
-            toolStripStatusLabel3.Text = Commentclass.Version;
+            //fmjump重新规定 ：00          01           02              03             04           05 
+            //            DSP升级    充ARM485     充电ARM(Eth)       主ARM485       主ARM(Eth)    DspBootload
+            //             Form3        Form2        Form8（新）       From1           From7        外部exe
+            //无处理
             string[] ports = System.IO.Ports.SerialPort.GetPortNames();//获取电脑上可用的串口号
             cdserialbox.Items.AddRange(ports);      //给端口号选择窗口添加数据
             cdserialbox.SelectedIndex = cdserialbox.Items.Count > 0 ? 0 : -1;  //如果里面有数据显示第零个
@@ -433,35 +191,195 @@ namespace _485刷机_Net_3._5
             string[] para = maximalsize.Split("*".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             string[] para1 = minimalsize.Split("*".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
 
+             //充电板目标文件的最小值
+            Commentclass.ChargeBoardFileSizeMin = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "ChargeBordFileMin", "None", IniFilesPath)) * 1024;
+            //充电板目标文件的最大值
+            Commentclass.ChargeBoardFileSizeMax = uint.Parse(ReadINIFiles.ReadIniData("FileSizeSet", "ChargeBordFileMax", "None", IniFilesPath)) * 1024;
+
+
             Commentclass.ChargeBordMaximalSize = Convert.ToUInt64(para[0]) * Convert.ToUInt64(para[1]);
             Commentclass.ChargeBordMinimalSize = Convert.ToUInt64(para1[0]) * Convert.ToUInt64(para1[1]);
 
             Console.WriteLine($"ChargeBordMaximalSize = {Commentclass.ChargeBordMaximalSize}.");
-            Console.WriteLine($"ChargeBordMinimalSize = {Commentclass.ChargeBordMinimalSize }.");
+            Console.WriteLine($"ChargeBordMinimalSize = {Commentclass.ChargeBordMinimalSize}.");
 
-            timer5.Start();
+            Commentclass.CommentRuningKyeName = Commentclass.CommentChargResgistryKeyName;
+            //读取路径，按读到的路径打开相应的文件路径
+            string msg;
+            RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentRuningKyeName, out msg);
+            Console.WriteLine($"读出来的路径 = {msg}.");
+            if (Commentclass.CommentReadSavePath == "" | Commentclass.CommentReadSavePath == string.Empty)
+            {
+                msg = "D:\\";
+            }
+            cdtextfile.Text = msg;
+
+            Admin_UI();
         }
+
+        /// <summary>
+        /// 注册表客户模式下隐藏住485刷机
+        /// </summary>
+        /// 
+        bool Admin_root;
+        void Admin_UI()
+        {
+            string msg;
+
+            this.comboBox1.Visible = false;
+            this.label5.Visible = false;
+            this.cdpoundbox.Visible = false;
+            this.label2.Visible = false;
+
+            RegistryKeyLi.ReadRegistryKey(Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentAppTargetResgistryKeyName, out msg);
+            Console.WriteLine("模式：" + msg);
+            if (msg == "User_Client")
+            {
+                //this.menuStrip1.Items[1].Visible = false;
+                this.menuStrip1.Items[3].Visible = false;
+                this.menuStrip1.Items[5].Visible = false;
+                
+
+                string temp = "注意：\r\n" +
+                              "1、充电器RS485升级前，需打到手动模式！！！\r\n" +
+                              "2、充电器RS485使用驱动器X6B RS485接口；";
+
+                this.databox.AppendText(temp);
+                this.databox.Select(21, 4);
+                this.databox.SelectionFont = new Font("宋体", 13.5f, FontStyle.Underline | FontStyle.Bold);
+                this.databox.SelectionColor = Color.Red;
+                this.databox.Select(0, 0);
+                
+
+                this.Width = 580;
+                this.Height = 380;
+
+                Admin_root = false;
+            }
+            else 
+            {
+                Admin_root = true;
+            }
+
+        }
+
+        #region 取代旧版的窗口跳转逻辑
+        private void Menustrip_Change(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+            //fmjump重新规定 ：00          01           02              03             04           05 
+            //            DSP升级    充ARM485     充电ARM(Eth)       主ARM485       主ARM(Eth)    DspBootload
+            //             Form3        Form2        Form8（新）       From1           From7        外部exe
+
+            Console.WriteLine(e.ClickedItem);
+
+            switch (e.ClickedItem.Text)
+            {
+                case "DSP以太网升级":
+                    if (Commentclass.fmjump != 0x00)
+                    {
+                        Commentclass.fm3.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm3.Show();
+                        Commentclass.fmjump = 0x00;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器485升级":
+                    if (Commentclass.fmjump != 0x01)
+                    {
+                        Commentclass.fm2.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm2.Show();
+                        Commentclass.fmjump = 0x01;
+                        this.Hide();
+                    }
+                    break;
+                case "充电器以太网升级":
+                    if (Commentclass.fmjump != 0x02)
+                    {
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Console.WriteLine(this.Location.X.ToString() + "   " + this.Location.Y.ToString());
+                        Commentclass.fm8.Show();
+                        Commentclass.fm8.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fmjump = 0x02;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM 485升级":
+                    if (Commentclass.fmjump != 0x03)
+                    {
+                        Commentclass.fm1.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm1.Show();
+                        Commentclass.fmjump = 0x03;
+                        this.Hide();
+                    }
+                    break;
+                case "ARM以太网升级":
+                    if (Commentclass.fmjump != 0x04)
+                    {
+                        Commentclass.fm7.Location = new Point(this.Location.X, this.Location.Y);
+                        Commentclass.fm7.Show();
+                        Commentclass.fmjump = 0x04;
+                        this.Hide();
+                    }
+                    break;
+                case "DspBootLoad":
+                    {
+                        //暂定
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+
+
+
+        }
+
+        #endregion
+
         #endregion
 
         #region 委托
         private void RecMsg(string str)
         {
-            this.databox.AppendText(str + "\r\n");
+            if (Admin_root)
+            {
+                this.databox.AppendText(str + "\r\n");
+            }
         }
         #endregion
 
         #region 点击下载按钮
         private void cdloadbtn_Click(object sender, EventArgs e)
         {
+            DialogResult messdr = MessageBoxMidle.Show(this, "请先打手动开关进入手动模式！\r\n是否已完成该操作？", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+            if (messdr != DialogResult.Yes)
+            {
+                return;
+            }
+
+            if (string.IsNullOrEmpty(this.cdtextfile.Text))
+            {
+                MessageBox.Show("请选择你要下载的充电器.Bin文件！");
+                return;
+            }
+
             Commentclass.CommentSpecialChargeNumCheck = Convert.ToUInt16(Commentclass.SettingMessageList[9]);
             Console.WriteLine($" Commentclass.CommentSpecialChargeNumCheck = { Commentclass.CommentSpecialChargeNumCheck}.");
             Commentclass.CommentHeadCheckNumLength = Commentclass.CommentSpecialChargeNumCheck;
             First_Run = false;                                                  //上位机不是首次打开
             disable_function();
             databox.Show();
-            databox.Clear();
+            
+            if (Admin_root)
+            {
+                databox.Clear();
+            }
+
             toolStripStatusLabel1.Text = "等待校验中.......";
             Step_Thr = true;            //用于判断充电板是否直接从IAP启动
+            RegistryKeyLi.WriteRegistryKey(this.cdtextfile.Text, Commentclass.CommentPublicResgistryKeyPath, Commentclass.CommentChargResgistryKeyName);
             load_file_onthepath();
         }
         #endregion
@@ -483,19 +401,20 @@ namespace _485刷机_Net_3._5
 
                
                 //加入文件大小判断
-                if (filedata.Length > (int)Commentclass.ChargeBordMaximalSize || filedata.Length < (int)Commentclass.ChargeBordMinimalSize)
+                if (filedata.Length > (int)Commentclass.ChargeBoardFileSizeMax || filedata.Length < (int)Commentclass.ChargeBoardFileSizeMin)
                 {
                     enable_function();
-                    MessageBoxMidle.Show("导入文件大小错误，非充电器ARM刷机文件！\r\n" + "请重新导入。", "文件错误");
+                    MessageBoxMidle.Show("当前导入的程序文件有误！请重新导入正确的程序文件！", "文件错误");
                     return;
                 }
                 //提示
+                /*
                 DialogResult messdr = MessageBoxMidle.Show(this, "请先打手动开关进入手动模式！\r\n是否已完成该操作？", "警告", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
                 if (messdr == DialogResult.No)
                 {
                     enable_function();
                     return;
-                }
+                }*/
 
                 //执行截取文件的操作
                 backack = ReadFiles.FragmentCode(Commentclass.ChargebordRedirectionAddr, Commentclass.ChargebordCodeStartAddr, (UInt64)filedata.Length,
@@ -636,7 +555,7 @@ namespace _485刷机_Net_3._5
             }
             catch (Exception err)
             {
-                MessageBoxMidle.Show(this, "打开失败,请检查串口！", "提示！");    //对话框显示打开失败
+                MessageBoxMidle.Show(this, "串口打开失败！\r\n请检查此串口号是否被其他软件占用！", "提示！");    //对话框显示打开失败
                 toolStripStatusLabel1.Text = "串口打开失败！请检查串口！";
                 enable_function();
                 return false;
@@ -702,6 +621,7 @@ namespace _485刷机_Net_3._5
                 {
                     sendacount++;
                     serialPort1.Write("A");  //发送三次A让主控进入透传状态
+                    BeginInvoke(myRcvMsgfm2, DateTime.Now.ToString("hh:mm:ss---") + "发送：" + StartsCRC.zftring(System.Text.Encoding.UTF8.GetBytes("A")));
                     if (sendacount == 1)
                     {
                         if (!powerdisplay)
@@ -714,7 +634,9 @@ namespace _485刷机_Net_3._5
                     Step_Thr = true;
                     timer1.Stop();
                     Debug.WriteLine("主控已进入透传状态");            //the likes printf
-                    if (!powerdisplay)
+                    BeginInvoke(myRcvMsgfm2, DateTime.Now.ToString("hh:mm:ss---") + "主控板进入透传状态\r\n");
+                    if (sendacount == 1)
+                        if (!powerdisplay)
                     {
                         databox.AppendText(Commentclass.ChargeStateMessageList[4] + DateTime.Now.ToString("hh:mm:ss") + "\r\n\r\n");
                         databox.AppendText(Commentclass.ChargeStateMessageList[5] + DateTime.Now.ToString("hh:mm:ss") + "\r\n\r\n");
@@ -798,7 +720,7 @@ namespace _485刷机_Net_3._5
             {
                 if (powerdisplay)
                 {
-                    Invoke(myRcvMsgfm2, "接收：" + StartsCRC.zftring(Resive_data));
+                    Invoke(myRcvMsgfm2, DateTime.Now.ToString("hh:mm:ss---")+ "接收：" + StartsCRC.zftring(Resive_data)+"\r\n");
                 }
                 #region 第一步：判断主控ARM是否处于IAP模式 
                 if (Step_One && len == 1 && Resive_step == 0 && Resive_data[0] == 0x43)
@@ -866,7 +788,7 @@ namespace _485刷机_Net_3._5
                     }
                 }
                 #endregion
-                #region stepfour
+                #region 
                 else if (Step_Thr)
                 {
                     Resive_step = Resive_step + 1;
@@ -981,7 +903,7 @@ namespace _485刷机_Net_3._5
                     Buffer.BlockCopy(alldata, 0, SneCapre, 0, alldata.Length);      // 将data复制到SneCapre之中
                     if (powerdisplay)
                     {
-                        Invoke(myRcvMsgfm2, "发送：" + StartsCRC.zftring(alldata));
+                        Invoke(myRcvMsgfm2, DateTime.Now.ToString("hh:mm:ss---")+ "发送：" + StartsCRC.zftring(alldata));
                     }
                     serialPort1.Write(alldata, 0, alldata.Length);                  //串口发送数据
                                                                                     //在这里进行报数据和反报数据的处理
@@ -1015,7 +937,7 @@ namespace _485刷机_Net_3._5
                     Buffer.BlockCopy(data, 0, SneCapre, 0, data.Length);    // 将data复制到SneCapre之中
                     if (powerdisplay)
                     {
-                        Invoke(myRcvMsgfm2, "发送：" + StartsCRC.zftring(data));
+                        Invoke(myRcvMsgfm2, DateTime.Now.ToString("hh:mm:ss---") + "发送：" + StartsCRC.zftring(data));
                     }
                     /*  System_RS = false;   */
                 }//等待校验成功
@@ -1060,9 +982,11 @@ namespace _485刷机_Net_3._5
                     serialPort1.Close();
                 }
                 Application.Exit();
-                //Console.WriteLine($"哈哈退出.");
             }
-           
+
+
+               
+
         }
         #endregion
 
@@ -1097,7 +1021,21 @@ namespace _485刷机_Net_3._5
             }
             catch (Exception err)
             {
-                MessageBoxMidle.Show("文件路径错误，请检查文件路径格式。", "路径错误");
+                //MessageBoxMidle.Show("文件路径错误，请检查文件路径格式。", "路径错误");
+                OpenFileDialog ofd = new OpenFileDialog();
+                ofd.InitialDirectory = ("D:\\");
+                ofd.Filter = "|*.bin";//设置当前文件名筛选器字符串
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    this.cdtextfile.Text = ofd.FileName;
+                    WritePrivateProfileString(strOne, "CDARMData_Source", cdtextfile.Text, str);
+                    Debug.WriteLine("已打开文件");
+                }
+                else
+                {
+                    Debug.WriteLine("取消打开文件");
+                    return;
+                }
             }
             //try
             //{
@@ -1294,7 +1232,11 @@ namespace _485刷机_Net_3._5
                 loadtimecount = false;
                 AckSend_Function.Abort();       // 关闭线程
                // toolStripStatusLabel1.Text = "烧录完成！";
-                databox.AppendText(Commentclass.ChargeStateMessageList[9] + DateTime.Now.ToString("hh:mm:ss") + "\r\n\r\n");
+               if(Admin_root)
+                {
+                    databox.AppendText(Commentclass.ChargeStateMessageList[9] + DateTime.Now.ToString("hh:mm:ss") + "\r\n\r\n");
+                }
+                
                 toolStripStatusLabel1.Text = "程序升级完成！";
                 timer3.Stop();
                 timer8.Stop();
@@ -1580,6 +1522,8 @@ namespace _485刷机_Net_3._5
             menuStrip1.Enabled = false;
             cdloadbtn.Enabled = false;
             cdviewbtn.Enabled = false;
+            this.groupBox1.Enabled = false;
+            this.menuStrip1.Enabled = false;
         }
 
         private void enable_function()
@@ -1587,6 +1531,8 @@ namespace _485刷机_Net_3._5
             menuStrip1.Enabled = true;
             cdloadbtn.Enabled = true;
             cdviewbtn.Enabled = true;
+            this.groupBox1.Enabled = true;
+            this.menuStrip1.Enabled = true; 
         }
 
         private void databox_TextChanged(object sender, EventArgs e)
@@ -1634,5 +1580,7 @@ namespace _485刷机_Net_3._5
             }
         }
 
+
+ 
     }
 }
